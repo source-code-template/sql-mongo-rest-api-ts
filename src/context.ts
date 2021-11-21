@@ -31,7 +31,6 @@ export function createContext(provider: string|undefined, db: Pool|Db): Applicat
     const health = new HealthController([mongoChecker]);
 
     const userSearchBuilder = new MongoSearchBuilder<User, UserFilter>(mongoDb, 'users', buildQuery, userModel.attributes);
-
     const userService = new MongoUserService(userSearchBuilder.search, mongoDb);
     const user = new UserController(log, userService);
 
