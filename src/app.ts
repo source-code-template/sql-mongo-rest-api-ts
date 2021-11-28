@@ -1,52 +1,41 @@
 import { json } from 'body-parser';
+import { merge } from 'config-plus';
 import dotenv from 'dotenv';
 import express from 'express';
 import http from 'http';
 import { connectToDb } from 'mongodb-extension';
 import mysql from 'mysql';
+import { config } from './config';
 import { createContext } from './context';
 import { route } from './route';
 
 dotenv.config();
+const conf = merge(config, process.env);
 
 const app = express();
-
-const provider: string | undefined = process.env.PROVIDER;
-const port = process.env.PORT;
-
 app.use(json());
 
-if (provider !== 'mongo') {
-  const password = process.env.PASSWORD;
-  const pool = mysql.createPool({
-    host: '127.0.0.1',
-    port: 3306,
-    user: 'root',
-    password,
-    database: 'masterdata',
-    multipleStatements: true,
-  });
+if (conf.provider !== 'mongo') {
+  const pool = mysql.createPool(conf.db);
   pool.getConnection((err, conn) => {
     if (err) {
       console.error('Failed to connect to MySQL.', err.message, err.stack);
     }
     if (conn) {
-      const ctx = createContext(provider, pool);
-      route(app, ctx);
-      http.createServer(app).listen(port, () => {
-        console.log('Start server at port ' + port);
-      });
       console.log('Connected successfully to MySQL.');
+      const ctx = createContext(conf.provider, pool, conf);
+      route(app, ctx);
+      http.createServer(app).listen(conf.port, () => {
+        console.log('Start server at port ' + conf.port);
+      });
     }
   });
 } else {
-  const mongoURI = process.env.MONGO_URI;
-  const mongoDB = process.env.MONGO_DB;
-  connectToDb(`${mongoURI}`, `${mongoDB}`).then(db => {
-    const ctx = createContext(provider, db);
+  connectToDb(`${conf.mongo.uri}`, `${conf.mongo.db}`).then(db => {
+    const ctx = createContext(conf.provider, db, conf);
     route(app, ctx);
-    http.createServer(app).listen(port, () => {
-      console.log('Start mongo server at port ' + port);
+    http.createServer(app).listen(conf.port, () => {
+      console.log('Start mongo server at port ' + conf.port);
     });
   });
 }
