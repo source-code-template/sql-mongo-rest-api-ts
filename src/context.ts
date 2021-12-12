@@ -17,7 +17,7 @@ export interface ApplicationContext {
   log: LogController;
   user: UserController;
 }
-export function createContext(db: DB|Db, conf: Config): ApplicationContext {
+export function useContext(db: DB|Db, conf: Config): ApplicationContext {
   const logger = new JSONLogger(conf.log.level, conf.log.map);
   const log = new LogController(logger, map);
   let health: HealthController;
