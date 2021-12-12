@@ -2,12 +2,12 @@ import { Db } from 'mongodb';
 import { buildQuery, SearchBuilder as MongoSearchBuilder } from 'mongodb-extension';
 import { DB, SearchBuilder } from 'query-core';
 import { User, UserFilter, userModel, UserService } from './user';
-import { UserController } from './UserController';
+import { UserController } from './user-controller';
 export * from './user';
 export { UserController };
 
-import { MongoUserService } from './MongoUserService';
-import { SqlUserService } from './SqlUserService';
+import { MongoUserService } from './mongo-user-service';
+import { SqlUserService } from './sql-user-service';
 
 export function useUser(ds: DB | Db, provider?: string): UserService {
   if (provider !== 'mongo') {
