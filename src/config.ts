@@ -21,3 +21,11 @@ export const config = {
     db: 'masterdata'
   }
 };
+export const env = {
+  sit: {
+    port: 8082,
+    db: {
+      database: 'masterdata_sit',
+    }
+  }
+};

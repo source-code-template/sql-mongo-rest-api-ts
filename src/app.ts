@@ -23,7 +23,7 @@ if (conf.provider !== 'mongo') {
     }
     if (conn) {
       console.log('Connected successfully to MySQL.');
-      const ctx = createContext(conf.provider, pool, conf);
+      const ctx = createContext(pool, conf);
       route(app, ctx);
       http.createServer(app).listen(conf.port, () => {
         console.log('Start server at port ' + conf.port);
@@ -32,10 +32,10 @@ if (conf.provider !== 'mongo') {
   });
 } else {
   connectToDb(`${conf.mongo.uri}`, `${conf.mongo.db}`).then(db => {
-    const ctx = createContext(conf.provider, db, conf);
+    const ctx = createContext(db, conf);
     route(app, ctx);
     http.createServer(app).listen(conf.port, () => {
       console.log('Start mongo server at port ' + conf.port);
     });
-  });
+  }).catch(err => console.log('Cannot connect to mongo: ' + err));
 }
