@@ -1,5 +1,5 @@
 {
-  "name": "sql-mongo-rest-service-ts",
+  "name": "sql-mongo-rest-api-ts",
   "version": "1.0.0",
   "description": "",
   "main": "app",
@@ -19,11 +19,11 @@
     "express-ext": "^0.1.11",
     "logger-core": "^0.1.3",
     "mongodb": "^3.6.11",
-    "mongodb-extension": "^0.1.8",
+    "mongodb-extension": "^0.1.9",
     "mysql": "^2.18.1",
     "mysql-core": "^0.1.14",
-    "onecore": "^0.0.22",
-    "query-core": "^0.1.15",
+    "onecore": "^0.0.25",
+    "query-core": "^0.1.16",
     "xvalidators": "^0.0.1"
   },
   "devDependencies": {
