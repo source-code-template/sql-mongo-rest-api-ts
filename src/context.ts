@@ -2,8 +2,7 @@ import { HealthController, LogController, resources } from 'express-ext';
 import { JSONLogger, LogConfig, map } from 'logger-core';
 import { Db } from 'mongodb';
 import { MongoChecker } from 'mongodb-extension';
-import { Pool } from 'mysql';
-import { MySQLChecker, PoolManager } from 'mysql-core';
+import { createChecker, DB } from 'query-core';
 import { createValidator } from 'xvalidators';
 import { UserController, useUserController } from './user';
 
@@ -18,24 +17,19 @@ export interface ApplicationContext {
   log: LogController;
   user: UserController;
 }
-export function createContext(ds: Pool|Db, conf: Config): ApplicationContext {
+export function createContext(db: DB|Db, conf: Config): ApplicationContext {
   const logger = new JSONLogger(conf.log.level, conf.log.map);
   const log = new LogController(logger, map);
+  let health: HealthController;
 
   if (conf.provider !== 'mongo') {
-    const pool: Pool = ds as Pool;
-    const sqlChecker = new MySQLChecker(pool);
-    const health = new HealthController([sqlChecker]);
-    const db = new PoolManager(pool);
-
-    const user = useUserController(logger.error, db, conf.provider);
-    return { health, log, user };
+    const sqlChecker = createChecker(db as DB);
+    health = new HealthController([sqlChecker]);
   } else {
-    const db: Db = ds as Db;
-    const mongoChecker = new MongoChecker(db);
-    const health = new HealthController([mongoChecker]);
-
-    const user = useUserController(logger.error, db, conf.provider);
-    return { health, log, user };
+    const mongoChecker = new MongoChecker(db as Db);
+    health = new HealthController([mongoChecker]);
   }
+
+  const user = useUserController(logger.error, db, conf.provider);
+  return { health, log, user };
 }
